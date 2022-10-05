@@ -1,13 +1,11 @@
 package com.assign05;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.Collections;
 
 public class ArrayListSorter <T> {
 
-    public int sizeThreshold = 1;
+    public static int sizeThreshold = 1;
 
     /**
      * Changes the mergeSort to insertSort Threshold.
@@ -28,35 +26,38 @@ public class ArrayListSorter <T> {
     }
 
 
-    public static <T> void insertionSort(ArrayList<T> array,ArrayList<T> tempArr) {
-        for (int i = 0; i <= array.size(); i++) {
-            int j = i;
-            while (j > 0 && array.get(i).compareTo(array.get(j - 1)) == -1) {
-                temp[j] = tempArr.get(j - 1);
+    public static <T extends Comparable<? super T>> void insertionSort(ArrayList<T> array) {
+        for (int i = 1; i < array.size(); i++){
+            int j = i - 1;
+            T temp = array.get(i);
+            while((j >= 0 && temp.compareTo(array.get(j)) <= 0)){
+                array.set(j + 1,array.get(j));
                 j--;
-            }
-        }
 
-        for(int k = 0; k < temp.size(); k++) {
-            array.removeAll(array);
-            array.add(temp[k]);
+            }
+
+            array.set(j + 1,temp);
+
         }
     }
 
-    public void mergesort(ArrayList<T> arr, ArrayList<T> temp, int start, int end) {
+    public static <T extends Comparable<? super T>> void mergesort(ArrayList<T> arr, ArrayList<T> temp, int start, int end) {
 
-        // TODO: Replace this with an insertion sort threshold
-        if ((start + sizeThreshold - 1) >= end) {
-            instertionSort(arr);
-        }
+
 
         int mid = start + (end - start) / 2;
+        // TODO: Replace this with an insertion sort threshold
+        if ((start + sizeThreshold) >= end) {
+
+            insertionSort(arr);
+        }
+
         mergesort(arr, temp, start, mid);
         mergesort(arr, temp, mid + 1, end);
         merge(arr, temp, start, mid, end);
     }
 
-    public void merge(ArrayList<T> arr, ArrayList<T> temp, int start, int mid, int end) {
+    public static <T extends Comparable<? super T>> void merge(ArrayList<T> arr, ArrayList<T> temp, int start, int mid, int end) {
 
         int i = start;
         int j = mid + 1;
@@ -64,11 +65,13 @@ public class ArrayListSorter <T> {
 
 
         while (i <= mid && j <= end) {
-            if (arr.get(1).compareTo(arr.get(1))) {
+            if (arr.get(i).compareTo(arr.get(j)) <= 0) {
                 //
-                temp[mergePos++] = arr[i++];
+//                temp[mergePos++] = arr[i++];
+                temp.add(mergePos++,arr.get(i++));
             } else {
-                temp[mergePos++] = arr[j++];
+//                temp[mergePos++] = arr[j++];
+                temp.add(mergePos++,arr.get(j++));
             }
         }
 
@@ -78,9 +81,7 @@ public class ArrayListSorter <T> {
     }
 
 
-    public <T extends Comparable<? super T>> void mergesort(ArrayList<T> arr) {
-
-
+    public static <T extends Comparable<? super T>> void mergesort(ArrayList<T> arr) {
 
         ArrayList<T> temp = new ArrayList<T>(arr.size());
 
@@ -88,7 +89,7 @@ public class ArrayListSorter <T> {
 
     }
 
-    public ArrayList<Integer> generateAscending(int size) {
+    public static ArrayList<Integer> generateAscending(int size) {
 
         ArrayList<Integer> arrayList = new ArrayList<Integer>(size);
         for (int i = 0; i < size; i++) {
@@ -99,7 +100,7 @@ public class ArrayListSorter <T> {
         return arrayList;
     }
 
-    public ArrayList<Integer> generateDescending(int size) {
+    public static ArrayList<Integer> generateDescending(int size) {
         ArrayList<Integer> arrayList = new ArrayList<Integer>(size);
         for (int i = size; i > 0; i--) {
             arrayList.add(i);
@@ -107,17 +108,37 @@ public class ArrayListSorter <T> {
         return arrayList;
     }
 
-    public ArrayList<Integer> generatePermuted(int size) {
-        return Collections.shuffle(shufflegenerateAscending(size));
+    public static ArrayList<Integer> generatePermuted(int size) {
+
+      ArrayList<Integer> a = ArrayListSorter.generateAscending(size);
+        Collections.shuffle(a);
+        return a;
     }
 
 
     public static void main(String[] args){
-        System.out.println("Hi");
+
+        ArrayList n = generatePermuted(50);
+//        for(int i = 1; i <= 5; i++){
+//        n.add(i);}
+
+
+
+        System.out.println(n.toString());
+
+        mergesort(n);
+
+        System.out.println(n.toString());
+
+
     }
 
 
 }
+
+
+
+
 ////    find pivot, swap with item at rightBound;
 //        public void quickSort(ArrayList<T>, Comparator <? super T> ){
 //       
