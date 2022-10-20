@@ -1,4 +1,6 @@
+//package assign06;
 package com.assign05.assign06;
+
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
