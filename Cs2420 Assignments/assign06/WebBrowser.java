@@ -25,11 +25,15 @@ public class WebBrowser {
         forward = new LinkedListStack<URL>();
 
         history = new LinkedListStack<>();
-        current = hist.deleteFirst();
+        current = hist.getFirst();
 //        hist.deleteFirst();
-        while(!hist.isEmpty()){
-        history.push(hist.delete(hist.size() - 1));
+//        while(!hist.isEmpty()){
+//        history.push(hist.delete(hist.size() - 1));
+//
+//        }
 
+        for(int i = 1; i < hist.size();i++){
+            history.push(hist.get(i));
         }
 //        history.pop();
 
@@ -75,18 +79,14 @@ public class WebBrowser {
 
         LinkedListStack<URL> copyHist = new LinkedListStack<URL>();
 
-        if(history.size() == 0){
+        if(history.size() == 0 && current == null){
+
             return null;}
-
-
-
-
-
 
         while(!history.isEmpty()){
             copyHist.push(history.peek());
         retHistory.insertFirst(history.pop());}
-         history.clear();
+//         history.clear();
 
          while(!copyHist.isEmpty()){
 
