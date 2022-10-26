@@ -1,5 +1,5 @@
-//package assign06;
-package com.assign05.assign06;
+package assign06;
+//package com.assign05.assign06;
 
 
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,12 @@ import org.junit.jupiter.api.Test;
 import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * This class contains tests for SinglyLinkedList
+ *
+ * @author Amelia Nelson and Sebastian Barney
+ * @version October 20, 2022
+ */
 class LinkedListTester {
 	
 

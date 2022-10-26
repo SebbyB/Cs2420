@@ -1,5 +1,5 @@
-//package assign06;
-package com.assign05.assign06;
+package assign06;
+//package com.assign05.assign06;
 
 
 import java.util.Iterator;
@@ -267,34 +267,68 @@ public class SinglyLinkedList<E> implements List<E> {
 		return retNode.data;
 	}}
 
+	/**
+	 * Deletes first element in SinglyLinked List
+	 * @return - Value of Element Deleted
+	 * @throws NoSuchElementException - If the list is empty there is nothing to delete: throw exception.
+	 */
 	@Override
 	public E deleteFirst() throws NoSuchElementException {
+		/**
+		 * If the list is empty throw.
+		 */
 		if(this.isEmpty()) {
 			throw new NoSuchElementException();
 		}
+		/**
+		 * Otherwise, decrease the size of the list and get the data from head, Stored as dataDelete.
+		 * If the list will be empty after deleting the head, set the head to null.
+		 */
 		size--;
+		E dataDelete = head.data;
 		if(head.next == null) {
-			E dataDelete = head.data;
+
 			head = null;
 			return dataDelete;
 		}
+		/**
+		 * Otherwise, move the head.
+		 */
+		else{
 		Node newNode = head.next;
-		E dataDelete = head.data;
 		head = newNode;
 
-		return dataDelete;
+		//Return dataDelete.
+		return dataDelete;}
 	}
 
+	/**
+	 * Deletes an element at an index.
+	 * @param index - the specified position
+	 * @return - value of delete element.
+	 * @throws IndexOutOfBoundsException - if index out of bounds throw.
+	 */
 	@Override
 	public E delete(int index) throws IndexOutOfBoundsException {
 
+		/**
+		 * Checks if the index is out of bounds. Throws if it does.
+		 */
 		if(index > size-1 || index < 0) {
 			throw new IndexOutOfBoundsException();
 		}
+
+		/**
+		 * Instantiates an iterator using the list.
+		 * Stores data as object.
+		 */
 		Iterator<E> iter = new LinkedListIterator(head);
-		
 		E checkData = get(index);
-		
+
+		/**
+		 * Goes through and deletes data from list using iterator.
+		 * Then Returns.
+		 */
 		while (iter.hasNext()) {
 			if(iter.next() == checkData) {
 				iter.remove();
@@ -303,8 +337,19 @@ public class SinglyLinkedList<E> implements List<E> {
 		return checkData;
 	}
 
+	/**
+	 * Finds index of element.
+	 * @param element - the element to search for
+	 * @return index within the linked list that the object is in.
+	 */
 	@Override
 	public int indexOf(E element){
+		/**
+		 * Initiates iterator at the head. Keeps track of index and loops through iterator.
+		 * if the data at any index is the element return index.
+		 * If not in list return -1.
+		 */
+
 		Iterator<E> iter = new LinkedListIterator(head);
 		int indexOfElement = 0;
 		while (iter.hasNext()) {
@@ -316,11 +361,19 @@ public class SinglyLinkedList<E> implements List<E> {
 		return -1;
 	}
 
+	/**
+	 * Gets size of linked list.
+	 * @return integer value of size.
+	 */
 	@Override
 	public int size() {
 		return size;
 	}
 
+	/**
+	 * Checks if the list is empty.
+	 * @return true if empty, false if not empty.
+	 */
 	@Override
 	public boolean isEmpty() {
 		if (head == null) {
@@ -329,6 +382,9 @@ public class SinglyLinkedList<E> implements List<E> {
 		return false;
 	}
 
+	/**
+	 * Clears the list by setting head to null and size to 0;
+	 */
 	@Override
 	public void clear() {
 		head = null;
@@ -336,8 +392,18 @@ public class SinglyLinkedList<E> implements List<E> {
 
 	}
 
+	/**
+	 * Changes linkedList into Object Array using Iterator.
+	 * @return Array of Objects.
+	 */
 	@Override
 	public Object[] toArray() {
+		/**
+		 * Initializes Object Array of size.
+		 * Initializes iterator with head.
+		 * loops through and copies data from LinkedList to Array at every index.
+		 * returns Object Array
+		 */
 		Object[] returnArray =  new Object[size];	
 		Iterator<E> iter = new LinkedListIterator(head);
 		if(returnArray.length>0) {
@@ -348,6 +414,10 @@ public class SinglyLinkedList<E> implements List<E> {
 		return returnArray;
 	}
 
+	/**
+	 * initializes an iterator for a LinkedList.
+	 * @return Iterator.
+	 */
 	@Override
 	public Iterator<E> iterator() {
 		return new LinkedListIterator(head);
