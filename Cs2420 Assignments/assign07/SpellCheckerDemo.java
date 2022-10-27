@@ -1,5 +1,5 @@
 //package assign07;
-package com.assign05.assign07;
+package com.Assignments.assign07;
 
 import java.io.File;
 import java.util.List;
@@ -13,11 +13,9 @@ import java.util.List;
 public class SpellCheckerDemo {
 
 	public static void main(String[] args) {
-
-		SpellChecker mySC = new SpellChecker(new File("src/assign07/dictionary.txt"));
-
-		runSpellCheck(mySC, "src/assign07/hello_world.txt");
-		runSpellCheck(mySC, "src/assign07/good_luck.txt");
+		SpellChecker mySC = new SpellChecker(new File("Cs2420 Assignments\\assign07\\dictionary.txt"));
+		runSpellCheck(mySC, "Cs2420 Assignments\\assign07\\hello_world.txt");
+		runSpellCheck(mySC, "Cs2420 Assignments\\assign07\\good_luck.txt");
 	}
 
 	/**

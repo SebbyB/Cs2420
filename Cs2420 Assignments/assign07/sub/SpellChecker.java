@@ -1,5 +1,5 @@
-//package assign07;
-package com.Assignments.assign07;
+package assign07;
+//package com.Assignments.assign07;
 
 
 import java.io.File;
