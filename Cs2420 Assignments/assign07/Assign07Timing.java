@@ -1,17 +1,22 @@
+//package assign06;
 package com.Assignments.assign07;
 
+
+
 import com.opencsv.CSVWriter;
+import org.apache.commons.collections.functors.PredicateTransformer;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class Assign07Timing {
-
 
     public String CSV_FILE_NAME;
     public static String seperate = "===========================================================\n===========================================================";
@@ -47,108 +52,156 @@ public class Assign07Timing {
 
 
 
-    public static String addTiming(int timesToLoop, ArrayList<Integer> list){
 
+    public static ArrayList<Integer> generateSortedList(int listSize){
+
+        ArrayList<Integer> list = new ArrayList<>();
+        for(int i = 0; i < listSize; i++) {
+            list.add(i);
+        }
+        return list;
+    }
+    public static ArrayList<Integer> generateReverseOrderList(int listSize){
+
+        ArrayList<Integer> list = new ArrayList<>();
+        for(int i = listSize; i >= 0; i--) {
+            list.add(i);
+        }
+        return list;
+    }
+
+    public static ArrayList<Integer> generateRandomList(int listSize){
+
+        ArrayList<Integer> list = new ArrayList<>();
+        for(int i = 0; i < listSize; i++) {
+            list.add(i);
+        }
+        Collections.shuffle(list);
+        return list;
+    }
+
+
+    public static String containsTiming(int timesToLoop, ArrayList<Integer> list){
+        BinarySearchTree<Integer> testTree = new BinarySearchTree<Integer>();
+
+        for(Integer element : list){
+            testTree.add(element);
+        }
         long startTime = System.nanoTime();
+        for (int i = 1; i <= timesToLoop; i++) {
 
-            for (int i = 1; i <= timesToLoop; i++) {
-                BinarySearchTree testTree = new BinarySearchTree();
-                testTree.addAll(list);
-            }
 
-            long midPointTime = System.nanoTime();
 
-            for (int i = 1; i <= timesToLoop; i++) {
-                BinarySearchTree testTree = new BinarySearchTree();
-
-            }
-            long endTime = System.nanoTime();
-            long avg = ((midPointTime - startTime) - (endTime - midPointTime)) / timesToLoop;
+            testTree.containsAll(list);
+        }
+        long midPointTime = System.nanoTime();
+        for (int i = 1; i <= timesToLoop; i++) {
+        }
+        long endTime = System.nanoTime();
+        long avg = ((midPointTime - startTime) - (endTime - midPointTime)) / timesToLoop;
         return Long.toString(avg);
     }
 
-    public static ArrayList<Integer> createSortedArray(int sizeN){
-
-        ArrayList<Integer> retArray = new ArrayList<Integer>();
-
-        for (int i = 1; i <= sizeN; i++){
-            retArray.add(i);
-        }
-        return retArray;
-    }
 
 
-    public static ArrayList<Integer> createUnSortedArray(int sizeN){
+    public static void collectDataFirstExperiment(int maxSizeArray, int increment, int timesToLoop){
 
-        ArrayList<Integer> retArray = new ArrayList<Integer>();
+        System.out.println(seperate);
+        System.out.println("Starting First Timing Experiment...");
+        System.out.println("Parameters: (MaxSizeArray, IncrementOfArray, timesToLoop)");
+        System.out.println("(" + Integer.toString(maxSizeArray) + "," + Integer.toString(increment) + Integer.toString(timesToLoop)+")");
+        System.out.println("Data: (Items in List (n), SortedTree Time in NanoSeconds,  Descending Tree Time in NanoSeconds.  RandomTree Time in NanoSeconds )");
 
-        for (int i = sizeN; i >= 1; i--){
-            retArray.add(i);
-        }
-        return retArray;
-    }
-
-
-    public static void collectDataSortedVsNonSorted( int MaxSizeArray, int increment, int timesToLoop){
+        String[] dataPoint = new String[]{"ItemsInList"  + "," + "SortedTree time(ns)" + "," + "DescendingTree time(ns)"+ "," + "RandomTree time(ns)"};
 
         System.out.println(seperate);
 
-
-        System.out.println("Starting Timing Experiment for Sorted Vs UnSorted");
-        System.out.println("Parameters: (MaxSizeArray, IncrementOfArray)");
-        System.out.println("(" + Integer.toString(MaxSizeArray) + "," + Integer.toString(increment) + ")");
-        System.out.println("Data: (N Items in List, Time in NanoSeconds Sorted, Time in NanoSeconds Unsorted)");
-
-        String[] data = new String[]{"ItemsInList"  + "," + "Sorted time(ns)" +"UnSorted time(ns)"  };
-
+        ArrayList<String[]> data = new ArrayList<String[]>();
+        data.add(dataPoint);
         System.out.println(seperate);
-
-        ArrayList<String[]> expData = new ArrayList<String[]>();
-        expData.add(data);
-        System.out.println(seperate);
-
-
-
-
-
-
-
 
         System.out.println("Timing Code...");
         System.out.println(seperate);
 
 
 
+        for(int n = 1; n <= maxSizeArray; n++){
+
+            ArrayList<Integer> sortedList = generateSortedList(n);
+            String sortedTime = containsTiming(timesToLoop,sortedList);
+            ArrayList<Integer> reverseOrderList = generateReverseOrderList(n);
+            String descendingTime = containsTiming(timesToLoop,reverseOrderList);
+            ArrayList<Integer> randomList = generateRandomList(n);
+            String randomTime = containsTiming(timesToLoop,randomList);
 
 
+            dataPoint = new String[]{Integer.toString(n) + "," + sortedTime +"," + descendingTime+ "," + randomTime};
+            data.add(dataPoint);
 
-        for(int dataPoint = 1; dataPoint < MaxSizeArray; dataPoint+= increment) {
-            ArrayList<Integer> sortedArray = createSortedArray(dataPoint);
-            ArrayList<Integer> unSortedArray = createUnSortedArray(dataPoint);
-            data = new String[]{Integer.toString(dataPoint), addTiming(timesToLoop, sortedArray), addTiming(timesToLoop, unSortedArray)};
-            expData.add(data);
         }
+
         System.out.println("Exporting To File...");
-        String f =  "SortedVsUnsortedTiming" + ".csv";
+        String f =  "ContainsTime" + ".csv";
         System.out.println(f);
         Path p = Paths.get(f);
         String file = p.getFileName().toString();
-        writeDataAtOnce(file, expData);
+        writeDataAtOnce(file, data);
         System.out.println(seperate);
-
-
-
-
-
         System.out.println("Done");
         System.out.println(seperate);
 
+    }
 
+    public static void collectData(int maxSizeArray, int increment, int timesToLoop){
+
+        System.out.println(seperate);
+        System.out.println("Starting First Timing Experiment...");
+        System.out.println("Parameters: (MaxSizeArray, IncrementOfArray, timesToLoop)");
+        System.out.println("(" + Integer.toString(maxSizeArray) + "," + Integer.toString(increment) + Integer.toString(timesToLoop)+")");
+        System.out.println("Data: (Items in List (n), SortedTree Time in NanoSeconds,  Descending Tree Time in NanoSeconds.  RandomTree Time in NanoSeconds )");
+
+        String[] dataPoint = new String[]{"ItemsInList"  + "," + "SortedTree time(ns)" + "," + "DescendingTree time(ns)"+ "," + "RandomTree time(ns)"};
+
+        System.out.println(seperate);
+
+        ArrayList<String[]> data = new ArrayList<String[]>();
+        data.add(dataPoint);
+        System.out.println(seperate);
+
+        System.out.println("Timing Code...");
+        System.out.println(seperate);
+
+
+
+        for(int n = 1; n <= maxSizeArray; n++){
+
+            ArrayList<Integer> sortedList = generateSortedList(n);
+            String sortedTime = containsTiming(timesToLoop,sortedList);
+            ArrayList<Integer> reverseOrderList = generateReverseOrderList(n);
+            String descendingTime = containsTiming(timesToLoop,reverseOrderList);
+            ArrayList<Integer> randomList = generateRandomList(n);
+            String randomTime = containsTiming(timesToLoop,randomList);
+
+
+            dataPoint = new String[]{Integer.toString(n) + "," + sortedTime +"," + descendingTime+ "," + randomTime};
+            data.add(dataPoint);
+
+        }
+
+        System.out.println("Exporting To File...");
+        String f =  "ContainsTime" + ".csv";
+        System.out.println(f);
+        Path p = Paths.get(f);
+        String file = p.getFileName().toString();
+        writeDataAtOnce(file, data);
+        System.out.println(seperate);
+        System.out.println("Done");
+        System.out.println(seperate);
 
     }
 
+    public static void main(String[] args){
 
-    public static void main(String[] args) {
 
 
         Scanner S = new Scanner(System.in);
@@ -158,8 +211,17 @@ public class Assign07Timing {
         int maxSize = S.nextInt();
         System.out.println("Increment...");
         int increment = S.nextInt();
-        System.out.println("TimesToLoop...");
+        System.out.println("Times to Loop...");
         int timesToLoop = S.nextInt();
-        collectDataSortedVsNonSorted(maxSize,increment,timesToLoop);
+
+
+        collectDataFirstExperiment(maxSize,increment,timesToLoop);
+
+
+
+
     }
+
+
+
 }
