@@ -46,7 +46,7 @@ public class PathFinder {
 		System.out.println("StartingPathFinder...");
 
 		try {
-			Scanner scanner = new Scanner(new File("C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pathFind\\pacman.txt"));
+			Scanner scanner = new Scanner(new File("C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\pathFind\\pacman.txt"));
 
 			System.out.println("Solving maze...");
 
@@ -55,13 +55,13 @@ public class PathFinder {
 				mazeIn = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\" + m;
 
 				out = m + "Shortest";
-				outFilePath = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pathFind\\" + out +".txt";
+				outFilePath = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\pathFind\\" + out +".txt";
 
 				Graph mazeGraph = new Graph(mazeIn);
 
 
 
-				System.out.println(out + "PathLength:" + Integer.toString(mazeGraph.CalculateShortestPath()));
+//				System.out.println(out + "PathLength:" + Integer.toString(mazeGraph.CalculateShortestPath()));
 				mazeGraph.printGraph(outFilePath);
 
 				for(int mode = 0; mode <= 5; mode++){
@@ -69,7 +69,7 @@ public class PathFinder {
 					mazeGraph = new Graph(mazeIn);
 					mazeGraph.setMode(mode);
 				out =m + "DFSMode" + Integer.toString(mazeGraph.getMode());
-					outFilePath = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pathFind\\" + out + ".txt";
+					outFilePath = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\pathFind\\" + out + ".txt";
 
 
 				System.out.println(out + "  Pathlength:" + Integer.toString(mazeGraph.CalculateAPath()));

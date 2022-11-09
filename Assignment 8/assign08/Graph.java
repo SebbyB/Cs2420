@@ -22,6 +22,7 @@ public class Graph {
 	
 	// The node to start the path finding from
 	private Node start;
+	private Node goal;
 	
 	// The size of the maze
 	private int width;
@@ -82,6 +83,7 @@ public class Graph {
 					break;
 				case 'G':
 					nodes[i][j] = new Node(i, j);
+					goal = nodes[i][j];
 					nodes[i][j].isGoal = true;
 					break;
 				default:
@@ -121,6 +123,15 @@ public class Graph {
 
 
 
+	private boolean allVisited(){
+		for (Node[] nodeArr: nodes) {
+			for (Node node: nodeArr) {
+				if(!node.isWall && !node.isVisited)
+					return  false;
+			}
+		}
+		return true;
+	}
 
 	private void initNodes(Node node){
 
@@ -399,7 +410,9 @@ public class Graph {
 		}
 
 
-		return -1;
+		if(allVisited()){
+		return -1;}
+		else return pathLength;
 	}
 
 	

@@ -8,3 +8,4 @@ straight.txt
 tinyMaze.txt
 tinyOpen.txt
 unsolvable.txt
+randomMaze.txt
