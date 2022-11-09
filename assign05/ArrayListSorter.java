@@ -1,4 +1,4 @@
-package com.assign05;
+package com.Assignments.assign05;
 
 import java.util.ArrayList;
 import java.util.Collections;
