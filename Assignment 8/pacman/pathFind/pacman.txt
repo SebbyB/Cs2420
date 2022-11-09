@@ -1,0 +1,10 @@
+bigMaze.txt
+bigMaze_multigoal.txt
+classic.txt
+demoMaze.txt
+demoMaze_multigoal.txt
+mediumMaze.txt
+straight.txt
+tinyMaze.txt
+tinyOpen.txt
+unsolvable.txt
