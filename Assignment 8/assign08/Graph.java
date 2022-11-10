@@ -37,7 +37,7 @@ public class Graph {
 	 *mode4 (Top -> Bottom -> Right -> Left)
 	 *mode5 (Right -> Left -> Top -> Bottom)
 	 */
-	public int mode;
+	public int mode = 4;
 	
 	/**
 	 * Constructs a maze graph from the given text file.
@@ -254,12 +254,17 @@ public class Graph {
 				pathLength++;
 				currentNode.isOnPath = true;
 
+				String string = "mazeFromPath " + Integer.toString(pathLength) + ".txt";
+
+				printGraph(string);
+
 			}
 			return pathLength;
 		}
 
 
 
+		int ret;
 		/**
 		 * Checks mode 0 DFS (Left -> Top -> Right -> Down)
 		 *
@@ -275,23 +280,36 @@ public class Graph {
 		 * The mode changes the order in which nextNode chosen.
 		 * Ex. Mode0 nextNode starts with leftNode then goes to topNode, then goes to rightNode, then to bottomNode.
 		 */
-		if (this.mode == 0){
+		if(this.mode == 0){
+
+//			String string = "Assignment 8/CurrentDFSSearch/mazeMode0DFS_Row" + Integer.toString(currentNode.row) +"_Column" + Integer.toString(currentNode.col) +".txt";
+//			printGraph(string);
+//			System.out.println(string);
 			if(!currentNode.leftNode.isWall && !currentNode.leftNode.isVisited){
 				currentNode.leftNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.leftNode);
+
+				ret = recursiveCalculateAPath(currentNode.leftNode);
+				if(ret != -1 )
+					return ret;
 			}
 			if(!currentNode.topNode.isWall && !currentNode.topNode.isVisited){
 				currentNode.topNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.topNode);
+				ret = recursiveCalculateAPath(currentNode.topNode);
+				if(ret != -1 )
+					return ret;
 			}
 			if(!currentNode.rightNode.isWall && !currentNode.rightNode.isVisited){
 				currentNode.rightNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.rightNode);
+				ret = recursiveCalculateAPath(currentNode.rightNode);
+				if(ret != -1 )
+					return ret;
 
 			}
 			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
 				currentNode.bottomNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.bottomNode);
+				ret = recursiveCalculateAPath(currentNode.bottomNode);
+				if(ret != -1 )
+					return ret;
 			}
 		}
 		/**
@@ -299,7 +317,7 @@ public class Graph {
 		 */
 
 
-		if (this.mode == 1){
+		if(this.mode == 1){
 			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
 				currentNode.bottomNode.previousInPath = currentNode;
 				return recursiveCalculateAPath(currentNode.bottomNode);
@@ -370,19 +388,27 @@ public class Graph {
 		if (this.mode == 4){
 			if(!currentNode.topNode.isWall && !currentNode.topNode.isVisited){
 				currentNode.topNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.topNode);
+				ret = recursiveCalculateAPath(currentNode.topNode);
+				if(ret != -1 )
+					return ret;
 			}
 			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
 				currentNode.bottomNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.bottomNode);
+				ret = recursiveCalculateAPath(currentNode.bottomNode);
+				if(ret != -1 )
+					return ret;
 			}
 			if(!currentNode.rightNode.isWall && !currentNode.rightNode.isVisited){
 				currentNode.rightNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.rightNode);
+				ret = recursiveCalculateAPath(currentNode.rightNode);
+				if(ret != -1 )
+					return ret;
 			}
 			if(!currentNode.leftNode.isWall && !currentNode.leftNode.isVisited){
 				currentNode.leftNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.leftNode);
+				ret = recursiveCalculateAPath(currentNode.leftNode);
+				if(ret != -1 )
+					return ret;
 			}
 		}
 		/**
@@ -410,9 +436,9 @@ public class Graph {
 		}
 
 
-		if(allVisited()){
-		return -1;}
-		else return pathLength;
+//		if(allVisited()){
+		return -1;
+//		else return pathLength;
 	}
 
 	
@@ -480,6 +506,8 @@ public class Graph {
 				return "G";
 			if(isOnPath)
 				return ".";
+			if(isVisited)
+				return "V";
 			return " ";
 		}
 	}

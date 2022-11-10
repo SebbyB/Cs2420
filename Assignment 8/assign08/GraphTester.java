@@ -11,8 +11,8 @@ class GraphTester {
 //		Process pr = rt.exec("");
 
 
-		String Maze = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\bigMaze.txt";
-		String out = "random.txt";
+		String Maze = "Assignment 8/pacman/randomMaze.txt";
+		String out = "Solution.txt";
 
 		assign08.Graph mazeGraph = new assign08.Graph(Maze);
 //		int pathLen = mazeGraph.CalculateShortestPath();
