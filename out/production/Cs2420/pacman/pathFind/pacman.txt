@@ -8,4 +8,16 @@ straight.txt
 tinyMaze.txt
 tinyOpen.txt
 unsolvable.txt
+turn.txt
 randomMaze.txt
+randomMaze_multigoal.txt
+randomGenerateMaze1.txt
+randomGenerateMaze2.txt
+randomGenerateMaze3.txt
+randomGenerateMaze4.txt
+randomGenerateMaze5.txt
+randomGenerateMaze6.txt
+randomGenerateMaze7.txt
+randomGenerateMaze8.txt
+randomGenerateMaze9.txt
+randomGenerateMaze10.txt

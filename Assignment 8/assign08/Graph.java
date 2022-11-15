@@ -1,6 +1,5 @@
 package assign08;
 
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,7 +10,7 @@ import java.util.LinkedList;
 
 /**
  * 
- * @author Daniel Kopta, Sebastian Barney, Amelia Neilson
+ * @author Daniel Kopta, Sebastian Barney, Amelia Neilson.
  * This Graph class acts as a starting point for your maze path finder.
  * Add to this class as needed.
  */
@@ -22,7 +21,6 @@ public class Graph {
 	
 	// The node to start the path finding from
 	private Node start;
-	private Node goal;
 	
 	// The size of the maze
 	private int width;
@@ -37,7 +35,11 @@ public class Graph {
 	 *mode4 (Top -> Bottom -> Right -> Left)
 	 *mode5 (Right -> Left -> Top -> Bottom)
 	 */
-	public int mode = 4;
+	public int mode = 2;
+
+
+
+
 	
 	/**
 	 * Constructs a maze graph from the given text file.
@@ -83,7 +85,6 @@ public class Graph {
 					break;
 				case 'G':
 					nodes[i][j] = new Node(i, j);
-					goal = nodes[i][j];
 					nodes[i][j].isGoal = true;
 					break;
 				default:
@@ -121,20 +122,25 @@ public class Graph {
 	}
 
 
+	/**
+	 * Checks  if a Node should be skipped in the process of a search.
+	 * @param node - Node being checked.
+	 * @return True if it should be skipped, False otherwise.
+	 */
+	private boolean skipNode(Node node){
 
+		if(node.isVisited || node.isWall)
+			return true;
 
-	private boolean allVisited(){
-		for (Node[] nodeArr: nodes) {
-			for (Node node: nodeArr) {
-				if(!node.isWall && !node.isVisited)
-					return  false;
-			}
-		}
-		return true;
+		return false;
+
 	}
 
+	/**
+	 * Initializes a Node's surrounding Nodes to their appropriate pointers.
+	 * @param node - Node that gets initialized.
+	 */
 	private void initNodes(Node node){
-
 
 		int row = node.row;
 		int col = node.col;
@@ -154,32 +160,17 @@ public class Graph {
 	 */
 	public int CalculateShortestPath()
 	{
-		//Initializes an integer for pathLength to 0
 		int pathLength = 0;
-		//Creates a queue of Nodes to check - Offers start to graph in checkQueue. Changes isVisited for Start to true.
 		LinkedList<Node> checkQueue = new LinkedList<Node>();
 		checkQueue.offer(this.start);
 		start.isVisited = true;
 
-		/**
-		 * While the queue is not empty,
-		 * Poll a node from the queue,
-		 * Initialize it to have surrounding nodes.
-		 * Check if it's the goal - if it is go back through the path and increment length each time a node is touched. Return length.
-		 *
-		 * otherwise,
-		 *
-		 * If the TopNode is not a wall or has been visited, offer it to the queue.
-		 * Change previousInPath for the TopNode to the checkedNode.
-		 * Change isVisited for TopNode to True.
-		 *
-		 * Repeat Above for Bottom, Right, and Left Nodes.
-		 *
-		 * If the queue is empty, every node has been checked so there is no solution. Return -1.
-		 */
+		//While the queue isn't empty, check the first element of the queue and its surrounding nodes.
 		while(checkQueue.size() > 0){
 			Node checkNode = checkQueue.poll();
 			initNodes(checkNode);
+
+			//if the node isGoal traverse back through the path and give a path length.
 			if(checkNode.isGoal){
 				while(!checkNode.previousInPath.isStart){
 					checkNode = checkNode.previousInPath;
@@ -190,26 +181,33 @@ public class Graph {
 				return pathLength;
 			}
 
-			if(!checkNode.topNode.isWall && !checkNode.topNode.isVisited){
+			/**
+			 * Check surrounding nodes as children and check node as parent.
+			 * Check if the children should be skipped.
+			 * If a node isn't skipped, add it to the queue.
+			 * Set the previous path to the parent node.
+			 * Set the visited status to true.
+			 */
+			if(!skipNode(checkNode.topNode)){
 				checkQueue.offer(checkNode.topNode);
 				checkNode.topNode.previousInPath = checkNode;
-				checkNode.isVisited = true;
+				checkNode.topNode.isVisited = true;
 			}
-			if(!checkNode.bottomNode.isWall && !checkNode.bottomNode.isVisited){
+			if(!skipNode(checkNode.bottomNode)){
 				checkQueue.offer(checkNode.bottomNode);
 				checkNode.bottomNode.previousInPath = checkNode;
-				checkNode.isVisited = true;
+				checkNode.bottomNode.isVisited = true;
 			}
-			if(!checkNode.rightNode.isWall && !checkNode.rightNode.isVisited){
+			if(!skipNode(checkNode.rightNode)){
 				checkQueue.offer(checkNode.rightNode);
 				checkNode.rightNode.previousInPath = checkNode;
-				checkNode.isVisited = true;
+				checkNode.rightNode.isVisited = true;
 
 			}
-			if(!checkNode.leftNode.isWall && !checkNode.leftNode.isVisited){
+			if(!skipNode(checkNode.leftNode)){
 				checkQueue.offer(checkNode.leftNode);
 				checkNode.leftNode.previousInPath = checkNode;
-				checkNode.isVisited = true;
+				checkNode.leftNode.isVisited = true;
 
 			}
 
@@ -228,45 +226,33 @@ public class Graph {
 		int pathLength = recursiveCalculateAPath(this.start);
 		return pathLength;
 	}
-
-	/**
-	 * Recursively traverses a graph using DFS to find a path length. Has 6 different modes...
-	 * @param currentNode - Node whose graph is being DFSd.
-	 * @return path length.
-	 *mode0 (Left -> Top -> Right -> Down)
-	 *mode1 (Down -> Left -> Top -> Right)
-	 *mode2 (Right -> Down -> Left -> Top)
-	 *mode3 (Top -> Right -> Down -> Left)
-	 *mode4 (Top -> Bottom -> Right -> Left)
-	 *mode5 (Right -> Left -> Top -> Bottom)
-	 */
+	
 	private int recursiveCalculateAPath(Node currentNode) {
-		//Creates a pathLength Variable, initialized to 0. Initializes the currentNode and changes Visited Status.
 		int pathLength = 0;
 		initNodes(currentNode);
 		currentNode.isVisited = true;
-		/**
-		 * If the node is the goal go back through the path and sets the path to the path then return the path length.
-		 */
 		if(currentNode.isGoal) {
 			while(!currentNode.previousInPath.isStart){
 				currentNode = currentNode.previousInPath;
 				pathLength++;
 				currentNode.isOnPath = true;
 
-				String string = "mazeFromPath " + Integer.toString(pathLength) + ".txt";
-
-				printGraph(string);
-
 			}
 			return pathLength;
 		}
 
-
-
 		int ret;
+
+
+		Node leftNode = currentNode.leftNode;
+		Node rightNode = currentNode.rightNode;
+		Node topNode = currentNode.topNode;
+		Node bottomNode = currentNode.bottomNode;
+
+
+
 		/**
-		 * Checks mode 0 DFS (Left -> Top -> Right -> Down)
+		 *
 		 *
 		 * Method works the same for every mode, order is just changed.
 		 * Checks if the nextNode is a wall or has been visited. If they are, skip the node.
@@ -280,165 +266,205 @@ public class Graph {
 		 * The mode changes the order in which nextNode chosen.
 		 * Ex. Mode0 nextNode starts with leftNode then goes to topNode, then goes to rightNode, then to bottomNode.
 		 */
-		if(this.mode == 0){
+		switch (mode){
+			// Checks mode 0 DFS (Left -> Top -> Right -> Down)
+			case 0:{
 
-//			String string = "Assignment 8/CurrentDFSSearch/mazeMode0DFS_Row" + Integer.toString(currentNode.row) +"_Column" + Integer.toString(currentNode.col) +".txt";
-//			printGraph(string);
-//			System.out.println(string);
-			if(!currentNode.leftNode.isWall && !currentNode.leftNode.isVisited){
-				currentNode.leftNode.previousInPath = currentNode;
+				if(!skipNode(leftNode)){
+					leftNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(leftNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(topNode)){
+					topNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(topNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(rightNode)){
+					rightNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(rightNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(bottomNode)){
+					bottomNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(bottomNode);
+					if (ret != -1)
+						return ret;
+				}
+//				if(printGenerate){
+//					fileName = "Assignment 8/currentMazeGen/GraphFromRow" + Integer.toString(currentNode.row) + "_Col" + Integer.toString(currentNode.col) + ".txt";
+//					printGraph(fileName);
+//				}
+			}
+			//Checks mode 1 DFS (Down -> Left -> Top -> Right)
+			case 1:{
+				if(!skipNode(bottomNode)){
+					bottomNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(bottomNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(leftNode)){
+					leftNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(leftNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(topNode)){
+					topNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(topNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(rightNode)){
+					rightNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(rightNode);
+					if (ret != -1)
+						return ret;
+				}
+//				if(printGenerate){
+//					fileName = "Assignment 8/currentMazeGen/GraphFromRow" + Integer.toString(currentNode.row) + "_Col" + Integer.toString(currentNode.col) + ".txt";
+//					printGraph(fileName);
+//				}
+			}
+			//Checks mode 2 DFS (Right -> Down -> Left -> Top)
+			case 2:{
+				if(!skipNode(rightNode)){
+					rightNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(rightNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(bottomNode)){
+					bottomNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(bottomNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(leftNode)){
+					leftNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(leftNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(topNode)){
+					topNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(topNode);
+					if (ret != -1)
+						return ret;
+				}
+//				if(printGenerate){
+//					fileName = "Assignment 8/currentMazeGen/GraphFromRow" + Integer.toString(currentNode.row) + "_Col" + Integer.toString(currentNode.col) + ".txt";
+//					printGraph(fileName);
+//				}
 
-				ret = recursiveCalculateAPath(currentNode.leftNode);
-				if(ret != -1 )
-					return ret;
 			}
-			if(!currentNode.topNode.isWall && !currentNode.topNode.isVisited){
-				currentNode.topNode.previousInPath = currentNode;
-				ret = recursiveCalculateAPath(currentNode.topNode);
-				if(ret != -1 )
-					return ret;
-			}
-			if(!currentNode.rightNode.isWall && !currentNode.rightNode.isVisited){
-				currentNode.rightNode.previousInPath = currentNode;
-				ret = recursiveCalculateAPath(currentNode.rightNode);
-				if(ret != -1 )
-					return ret;
+			//Checks mode 3 DFS (Top -> Right -> Down -> Left)
+			case 3:{
+				if(!skipNode(topNode)){
+					topNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(topNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(rightNode)){
+					rightNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(rightNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(bottomNode)){
+					bottomNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(bottomNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(leftNode)){
+					leftNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(leftNode);
+					if (ret != -1)
+						return ret;
+				}
+//				if(printGenerate){
+//					fileName = "Assignment 8/currentMazeGen/GraphFromRow" + Integer.toString(currentNode.row) + "_Col" + Integer.toString(currentNode.col) + ".txt";
+//					printGraph(fileName);
+//				}
+
 
 			}
-			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
-				currentNode.bottomNode.previousInPath = currentNode;
-				ret = recursiveCalculateAPath(currentNode.bottomNode);
-				if(ret != -1 )
-					return ret;
+			//Checks mode 4 DFS (Top -> Bottom -> Right -> Left)
+			case 4:{
+				if(!skipNode(topNode)){
+					topNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(topNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(bottomNode)){
+					bottomNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(bottomNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(rightNode)){
+					rightNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(rightNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(leftNode)){
+					leftNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(leftNode);
+					if (ret != -1)
+						return ret;
+				}
+//				if(printGenerate){
+//					fileName = "Assignment 8/currentMazeGen/GraphFromRow" + Integer.toString(currentNode.row) + "_Col" + Integer.toString(currentNode.col) + ".txt";
+//					printGraph(fileName);
+//				}
+
+			}
+			//Checks mode 5 DFS (Right -> Left -> Top -> Bottom)
+			case 5:{
+				if(!skipNode(rightNode)){
+					rightNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(rightNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(leftNode)){
+					leftNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(leftNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(topNode)){
+					topNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(topNode);
+					if (ret != -1)
+						return ret;
+				}
+				if(!skipNode(bottomNode)){
+					bottomNode.previousInPath = currentNode;
+					ret = recursiveCalculateAPath(bottomNode);
+					if (ret != -1)
+						return ret;
+				}
+
+//				if(printGenerate){
+//					fileName = "Assignment 8/currentMazeGen/GraphFromRow" + Integer.toString(currentNode.row) + "_Col" + Integer.toString(currentNode.col) + ".txt";
+//					printGraph(fileName);
+//				}
+
 			}
 		}
-		/**
-		 * Checks mode 1 DFS (Down -> Left -> Top -> Right)
-		 */
 
 
-		if(this.mode == 1){
-			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
-				currentNode.bottomNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.bottomNode);
-			}
-			if(!currentNode.leftNode.isWall && !currentNode.leftNode.isVisited){
-				currentNode.leftNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.leftNode);
-			}
-			if(!currentNode.topNode.isWall && !currentNode.topNode.isVisited){
-				currentNode.topNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.topNode);
-			}
-			if(!currentNode.rightNode.isWall && !currentNode.rightNode.isVisited){
-				currentNode.rightNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.rightNode);
 
-			}
-		}
-		/**
-		 * Checks mode 2 DFS (Right -> Down -> Left -> Top)
-		 */
-
-		if (this.mode == 2){
-			if(!currentNode.rightNode.isWall && !currentNode.rightNode.isVisited){
-				currentNode.rightNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.rightNode);
-			}
-			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
-				currentNode.bottomNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.bottomNode);
-			}
-			if(!currentNode.leftNode.isWall && !currentNode.leftNode.isVisited){
-				currentNode.leftNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.leftNode);
-			}
-			if(!currentNode.topNode.isWall && !currentNode.topNode.isVisited){
-				currentNode.topNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.topNode);
-			}
-
-		}
-		/**
-		 * Checks mode 3 DFS (Top -> Right -> Down -> Left)
-		 */
-
-		if (this.mode == 3){
-			if(!currentNode.topNode.isWall && !currentNode.topNode.isVisited){
-				currentNode.topNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.topNode);
-			}
-			if(!currentNode.rightNode.isWall && !currentNode.rightNode.isVisited){
-				currentNode.rightNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.rightNode);
-			}
-			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
-				currentNode.bottomNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.bottomNode);
-			}
-			if(!currentNode.leftNode.isWall && !currentNode.leftNode.isVisited){
-				currentNode.leftNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.leftNode);
-			}
-		}
-		/**
-		 * Checks mode 4 DFS (Top -> Bottom -> Right -> Left)
-		 */
-
-		if (this.mode == 4){
-			if(!currentNode.topNode.isWall && !currentNode.topNode.isVisited){
-				currentNode.topNode.previousInPath = currentNode;
-				ret = recursiveCalculateAPath(currentNode.topNode);
-				if(ret != -1 )
-					return ret;
-			}
-			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
-				currentNode.bottomNode.previousInPath = currentNode;
-				ret = recursiveCalculateAPath(currentNode.bottomNode);
-				if(ret != -1 )
-					return ret;
-			}
-			if(!currentNode.rightNode.isWall && !currentNode.rightNode.isVisited){
-				currentNode.rightNode.previousInPath = currentNode;
-				ret = recursiveCalculateAPath(currentNode.rightNode);
-				if(ret != -1 )
-					return ret;
-			}
-			if(!currentNode.leftNode.isWall && !currentNode.leftNode.isVisited){
-				currentNode.leftNode.previousInPath = currentNode;
-				ret = recursiveCalculateAPath(currentNode.leftNode);
-				if(ret != -1 )
-					return ret;
-			}
-		}
-		/**
-		 * Checks mode 5 DFS (Right -> Left -> Top -> Bottom)
-		 */
-
-		if (this.mode == 5){
-			if(!currentNode.rightNode.isWall && !currentNode.rightNode.isVisited){
-				currentNode.rightNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.rightNode);
-			}
-			if(!currentNode.leftNode.isWall && !currentNode.leftNode.isVisited){
-				currentNode.leftNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.leftNode);
-			}
-			if(!currentNode.topNode.isWall && !currentNode.topNode.isVisited){
-				currentNode.topNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.topNode);
-			}
-			if(!currentNode.bottomNode.isWall && !currentNode.bottomNode.isVisited){
-				currentNode.bottomNode.previousInPath = currentNode;
-				return recursiveCalculateAPath(currentNode.bottomNode);
-			}
-
-		}
-
-
-//		if(allVisited()){
 		return -1;
-//		else return pathLength;
 	}
 
 	
@@ -458,24 +484,18 @@ public class Graph {
 		private boolean isOnPath;
 		private boolean isWall;
 		private boolean isVisited;
-
 		//Surrounding Nodes
 		private Node topNode;
 		private Node bottomNode;
 		private Node rightNode;
 		private Node leftNode;
-
-		//Data for NodePaths
+		//Last in path for return.
 		private Node previousInPath;
 
-
 		/**
-		 * Node Constructor
-		 *
-		 * Initializes any Node at a row and column to not be Start, Goal, On Path, or Visited.
-		 *
- 		 * @param r - row of Node.
-		 * @param c - column of Node.
+		 * Initializes node type to all false. Sets position of the node. Ensure there is no previousInPath pointer.
+ 		 * @param r - row position of node.
+		 * @param c - column position of node.
 		 */
 		public Node(int r, int c)
 		{
@@ -483,18 +503,10 @@ public class Graph {
 			isGoal = false;
 			isOnPath = false;
 			isVisited = false;
-
-
 			row = r;
 			col = c;
-
-
 			previousInPath = null;
 		}
-
-		/**
-		 * @return - String representation of Node.
-		 */
 		@Override
 		public String toString()
 		{
@@ -506,17 +518,15 @@ public class Graph {
 				return "G";
 			if(isOnPath)
 				return ".";
-			if(isVisited)
-				return "V";
 			return " ";
 		}
 	}
 
 	/**
-	 * Private setter method for DFS mode.
-	 * @param n - Which mode you would like to use.
-	 */
-	public void setMode(int n){
+	 *
+	 *Private setter method for DFS mode.
+	 * @param n - Which mode you would like to use.*/
+		public void setMode(int n){
 		if(n > 5 || n < 0){throw new IllegalArgumentException();}
 		this.mode = n;
 	}
@@ -529,8 +539,15 @@ public class Graph {
 		return this.mode;
 	}
 
+	public int nodesTouched(){
 
+		int nodesTouched = 0;
+		for(Node[] nodeArr : nodes){
+			for(Node node : nodeArr){
+				if(node.isVisited) nodesTouched++;
+			}
+		}
 
-
-
+		return nodesTouched;
+	}
 }

@@ -1,7 +1,11 @@
 package assign08;
 
+import com.opencsv.CSVWriter;
+
 import java.io.File;
-import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * 
@@ -20,70 +24,133 @@ public class PathFinder {
 	 */
 	public static void solveMaze(String inputFile, String outputFile, boolean findShortest)
 	{
-		assign08.Graph g = null;
+		Graph g = null;
 		try {
-			g = new assign08.Graph(inputFile);
+			g = new Graph(inputFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if(findShortest)
 			g.CalculateShortestPath();
 		else
-			g.setMode(0);
+//			g.setMode(0);
 			g.CalculateAPath();
 		
 		g.printGraph(outputFile);
 	}
-	
+
+	public static void writeDataAtOnce(String filePath, ArrayList<String[]> data) {
+
+		// first create file object for file placed at location
+		// specified by filepath
+		File file = new File(filePath);
+
+		try {
+			// create FileWriter object with file as parameter
+			FileWriter outputFile = new FileWriter(file);
+
+			// create CSVWriter object filewriter object as parameter
+			CSVWriter writer = new CSVWriter(outputFile, ',',
+					CSVWriter.NO_QUOTE_CHARACTER,
+					CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+					CSVWriter.DEFAULT_LINE_END);
+			writer.writeAll(data);
+			// closing writer connection
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception {
 
 		String out;
 		String mazeIn;
 		String outFilePath;
 
+		String nt;
+		String pl;
+		String method;
+		int num = 50;
+		int dim = 100;
+
+		ArrayList<String[]> bigData = new ArrayList<>();
+	bigData.add(new String[] {"DFS0", "DFS1","DFS2","DFS3","DFS4","DFS5", "Shortest","PathLength", "MazeSolved"});
 		System.out.println("StartingPathFinder...");
 
-		try {
-			Scanner scanner = new Scanner(new File("C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\pathFind\\pacman.txt"));
 
-			System.out.println("Solving maze...");
+		String m;
 
-			while(scanner.hasNextLine()){
-				String m = scanner.nextLine();
-				mazeIn = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\" + m;
-
-				out = m + "Shortest";
-				outFilePath = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\pathFind\\" + out +".txt";
-
-				Graph mazeGraph = new Graph(mazeIn);
+		Graph mazeGraph;
 
 
-
-//				System.out.println(out + "PathLength:" + Integer.toString(mazeGraph.CalculateShortestPath()));
-				mazeGraph.printGraph(outFilePath);
-
-				for(int mode = 0; mode <= 5; mode++){
-
-					mazeGraph = new Graph(mazeIn);
-					mazeGraph.setMode(mode);
-				out =m + "DFSMode" + Integer.toString(mazeGraph.getMode());
-					outFilePath = "C:\\Users\\sebas\\OneDrive\\Documents\\GitHub\\Cs2420\\Assignment 8\\pacman\\pathFind\\" + out + ".txt";
+		double d = .3;
+		int numGoals = 4;
+		for (int i = 1; i <= num; i++) {
+			String[] data = new String[9];
 
 
-				System.out.println(out + "  Pathlength:" + Integer.toString(mazeGraph.CalculateAPath()));
-					mazeGraph.printGraph(outFilePath);
+			String fn = "Assignment 8/pacman/randomGenerateMaze" + Integer.toString(i) + ".txt";
+			MazeGen.randomMaze(fn, dim, d, numGoals);
 
-				}
+			mazeIn = fn;
+			m = "randomGenerateMaze" + Integer.toString(i);
+			data[8] = m;
+
+			System.out.println(m);
+			for (int mode = 0; mode <= 5; mode++) {
+
+				mazeGraph = new Graph(fn);
+				mazeGraph.setMode(mode);
+				pl = Integer.toString(mazeGraph.CalculateAPath());
+				nt = Integer.toString(mazeGraph.nodesTouched());
+				method = "DFSMode" + Integer.toString(mazeGraph.getMode());
+				data[mode] = nt;
 			}
+			mazeGraph = new Graph(mazeIn);
+			pl = Integer.toString(mazeGraph.CalculateShortestPath());
+			nt = Integer.toString(mazeGraph.nodesTouched());
+			data[6] = nt;
+			data[7] = pl;
+//				bigData.add(new String[]{m,"Shortest",pl,nt});
+
+			bigData.add(data);
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+			String[] data = new String[9];
+
+
+			mazeIn = "Assignment 8/pacman/bigMaze_multigoal.txt";
+
+			m = "bigMulti";
+			data[8] = m;
+
+			System.out.println(m);
+			for(int mode = 0; mode <= 5; mode++){
+
+				mazeGraph = new Graph(mazeIn);
+				mazeGraph.setMode(mode);
+				pl = Integer.toString(mazeGraph.CalculateAPath());
+				nt = Integer.toString(mazeGraph.nodesTouched());
+				method = "DFSMode" + Integer.toString(mazeGraph.getMode());
+				data[mode] = nt;
+			}
+			mazeGraph = new Graph(mazeIn);
+			pl = Integer.toString(mazeGraph.CalculateShortestPath());
+			nt = Integer.toString(mazeGraph.nodesTouched());
+			data[6] = nt;
+			data[7] =pl;
+			bigData.add(data);
+
+
+		String fout = "Assignment 8/randomGenComparison" + Integer.toString(num) + "Mazes_Size"+Integer.toString(dim) + "_Density" + Integer.toString((int)d*10) + "_numGoals" + Integer.toString(numGoals)+ ".csv";
+		writeDataAtOnce(fout,bigData);
 		System.out.println("Done...");
+
+	}
+
 
 
 
 	}
-}

@@ -1,6 +1,6 @@
 10 19
 XXXXXXXXXXXXXXXXXXX
-XG      S        GX
+XG......S        GX
 X                 X
 X                 X
 XX X       X      X
