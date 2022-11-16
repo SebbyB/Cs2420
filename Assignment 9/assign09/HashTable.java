@@ -57,7 +57,11 @@ public class HashTable<K, V> implements Map<K, V> {
      * @return - Index in backing Array.
      */
     private int hashKey(K key){
-        return key.hashCode() % this.capacity;
+    	int hash = key.hashCode();
+    	if(hash == Integer.MIN_VALUE) {
+    		hash++;
+    	}
+        return Math.abs(hash) % this.capacity;
     }
 
 
@@ -79,6 +83,9 @@ public class HashTable<K, V> implements Map<K, V> {
         //Otherwise, return the first item in the list.
         //If there is no list, the item is not in the array, so it will return false.
         LinkedList<MapEntry<K,V>> list = table.get(hashKey(key));
+        if(list.size() <= 0) {
+        	return false;
+        }
         if(list.size() > 1){
         for(MapEntry<K,V> entry : list){
             if(entry.getKey().equals(key)){
@@ -138,7 +145,7 @@ public class HashTable<K, V> implements Map<K, V> {
      * @param num - number being checked.
      * @return - True if the number is prime, false otherwise.
      */
-    boolean isPrime(int num){
+     private boolean isPrime(int num){
         for(int i = 2; i < num; i++){
             if(num % i == 0){
                 return false;
@@ -152,7 +159,7 @@ public class HashTable<K, V> implements Map<K, V> {
      * @param num - number being doubled and primed.
      * @return - an integer that is at least twice the size of the input and prime.
      */
-    int doublePrime(int num){
+    private int doublePrime(int num){
 
         //Find twice the input parameter.
         int dub = num*2;
@@ -244,29 +251,22 @@ public class HashTable<K, V> implements Map<K, V> {
     public V put(K key, V value) {
         int hashKey = hashKey(key);
         MapEntry<K,V> entry = new MapEntry<>(key,value);
-
-
-
-
+        //finds linked list of associated hashkey value
             LinkedList<MapEntry<K,V>> list = this.table.get(hashKey);
-//        System.out.println(hashKey);
-//        System.out.println(Integer.toString(size) + "\t" + Integer.toString(capacity));
-
-
             for(MapEntry<K,V> kvPair : list){
                 if(kvPair.getKey().equals(key)) {
-
-
-                    if(kvPair.getValue().equals(value)){
-                    System.out.println("Key-Value Pair already exists in HashTable.");}
-                    V retVal = kvPair.getValue();
-                    kvPair.setValue(value);
-                    return retVal;
+                	//if there is already a mapkey with key value, replace the value
+                	//with in puted value
+                	V replaceValue = kvPair.getValue();
+                    kvPair.setValue(entry.getValue());
+                    return replaceValue;
                 }
 
             }
+            //if there is no repeat, add mapkey to associated haskey value list
         list.add(entry);
         size++;
+        //checks if table needs to be rehashed
         if((double)(size)/capacity >= lambda){
             reSizeReHash();
         }
@@ -285,19 +285,25 @@ public class HashTable<K, V> implements Map<K, V> {
     @Override
     public V remove(K key) {
         int hashKey = hashKey(key);
+        //Checks if the table even contains the key
         if((containsKey(key))){
+        	//Gets the hashkey linked list associated with the key
             LinkedList<MapEntry<K,V>> list = this.table.get(hashKey);
             V value;
             size--;
+            //if the linked list to be searched through is larger than one
             if(list.size() > 1) {
                 for (MapEntry<K, V> entry : list) {
-                    if (entry.getKey() == key) {
+                	//If any elements in the associated hash key linked list equal the
+                	//key, remove the entry
+                    if (entry.getKey().equals(key)) {
                         value = entry.getValue();
                         list.remove(entry);
                         return value;
                     }
                 }
             }
+            //if the linked list is one long
             else{
                 value = list.getFirst().getValue();
                 list.removeFirst();
@@ -319,6 +325,7 @@ public class HashTable<K, V> implements Map<K, V> {
         return this.size;
     }
 
+ //METHODS PREVIOUSLY USED FOR TESTOR
     public double currLambda(){
         return (double)(this.size) / this.capacity;
     }
