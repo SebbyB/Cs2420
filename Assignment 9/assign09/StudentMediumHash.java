@@ -8,8 +8,8 @@ import java.text.DecimalFormat;
  * object, but one that does a poor job of distributing students in a hash
  * table.
  * 
- * @author Erin Parker & ?
- * @version ?
+ * @author Erin Parker && Amelia Nelson && Sebastion Barney
+ * @version November 16, 2022
  */
 public class StudentMediumHash {
 
@@ -73,17 +73,11 @@ public class StudentMediumHash {
 		return firstName + " " + lastName + " (u" + formatter.format(uid) + ")";
 	}
 
-	public int hashString(String string){
-
-		int hashString = 0;
-		for(char character : string.toCharArray()){
-			hashString += Integer.valueOf(character);
-		}
-		return hashString;
-	}
+	
+	/**
+	 * @return an integer that functions as a hashcode for the particular student information
+	 */
 	public int hashCode() {
-
-		
-		return hashString(firstName) + hashString(lastName) + uid;
+		return (firstName.length() + lastName.length())*uid;
 	}
 }

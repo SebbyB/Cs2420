@@ -55,9 +55,7 @@ public class MapEntry<K, V> {
 	public boolean equals(Object other) {
 		if(!(other instanceof MapEntry<?, ?>))
 			return false;
-		
 		MapEntry<?, ?> rhs = (MapEntry<?, ?>)other;
-		
 		return key.equals(rhs.key) && value.equals(rhs.value);
 	}
 }

@@ -8,8 +8,8 @@ import java.text.DecimalFormat;
  * object, but one that does a poor job of distributing students in a hash
  * table.
  * 
- * @author Erin Parker & ?
- * @version ?
+ * @author Erin Parker && Amelia Nelson && Sebastion Barney
+ * @version November 16, 2022
  */
 public class StudentBadHash {
 
@@ -72,10 +72,10 @@ public class StudentBadHash {
 		DecimalFormat formatter = new DecimalFormat("0000000");
 		return firstName + " " + lastName + " (u" + formatter.format(uid) + ")";
 	}
-
+	/**
+	 * @return an integer that functions as a hashcode for the particular student information
+	 */
 	public int hashCode() {
-
-		
 		return uid % 100;
 	}
 }

@@ -3,7 +3,13 @@ package assign09;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
+/**
+ * Class that creates a functioning Hashtable data structure
+ * 
+ * 
+ * @author Amelia Nelson && Sebastian Barney
+ * @version November 16, 2022
+ */
 public class HashTable<K, V> implements Map<K, V> {
 
 
@@ -19,7 +25,7 @@ public class HashTable<K, V> implements Map<K, V> {
 
 
     //Desired Lambda value for the Hash Table
-    private double lambda = 1;
+    private double lambda = 5;
 
 
     /**
@@ -35,9 +41,6 @@ public class HashTable<K, V> implements Map<K, V> {
 
         size = 0;
     }
-
-
-
 
     /**
      * Clears the Hash Table
@@ -171,7 +174,7 @@ public class HashTable<K, V> implements Map<K, V> {
     }
 
     /**
-     * ReSizes and the HashTable and ReHashes all current Entries.
+     * Private helper method for resizing the HashTable and rehashes all current Entries.
      */
     private void reSizeReHash(){
         //Creates a list of all current Entries.
@@ -325,7 +328,7 @@ public class HashTable<K, V> implements Map<K, V> {
         return this.size;
     }
 
- //METHODS PREVIOUSLY USED FOR TESTOR
+// METHODS PREVIOUSLY USED FOR TESTER
     public double currLambda(){
         return (double)(this.size) / this.capacity;
     }
@@ -336,7 +339,20 @@ public class HashTable<K, V> implements Map<K, V> {
     public void setCapacity(int n){
         this.capacity = n;
     }
-    public void setLambda(int n){
+    public void setLambda(double n){
         this.lambda = n;
+    }
+    public int numCollisions(){
+
+        int num = 0;
+
+        for(LinkedList<MapEntry<K,V>> list : this.table){
+            if (list.size() > 1){
+                num++;
+            }
+        }
+
+
+        return num;
     }
 }

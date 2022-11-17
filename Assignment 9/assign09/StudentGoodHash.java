@@ -8,8 +8,8 @@ import java.text.DecimalFormat;
  * object, but one that does a poor job of distributing students in a hash
  * table.
  * 
- * @author Erin Parker & ?
- * @version ?
+ * @author Erin Parker && Amelia Nelson && Sebastion Barney
+ * @version November 16, 2022
  */
 public class StudentGoodHash {
 
@@ -73,12 +73,19 @@ public class StudentGoodHash {
 		return firstName + " " + lastName + " (u" + formatter.format(uid) + ")";
 	}
 
+	int power(int n,int m){
+
+		for(int i = 0; i <= m; i++){
+			n*=n;
+		}
+		return n;
+	}
 	private int hashString(String string){
 
 		int hashString = 0;
 		int size = string.length();
-		for(int i = 0; i < size; i++){
-			hashString += Integer.valueOf(string.charAt(i)) - i;
+		for(int i = 0; i <= 7; i++){
+			hashString+= size*(power(10,i));
 		}
 		return hashString;
 	}
