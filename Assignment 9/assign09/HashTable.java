@@ -25,7 +25,7 @@ public class HashTable<K, V> implements Map<K, V> {
 
 
     //Desired Lambda value for the Hash Table
-    private double lambda = 5;
+    private double lambda = 1;
 
 
     /**

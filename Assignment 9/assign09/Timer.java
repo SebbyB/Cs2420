@@ -255,6 +255,7 @@ public class Timer {
         }
         int size = ints.size();
         HashTable<Integer,String> testTable = new HashTable<>();
+        testTable.setLambda(1);
         for(int k = 0; k < size; k++){
             testTable.put(ints.get(k),strings.get(k));
         }
