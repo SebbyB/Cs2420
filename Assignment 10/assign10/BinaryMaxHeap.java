@@ -226,6 +226,9 @@ public class BinaryMaxHeap<E> implements PriorityQueue<E>{
 			
 			int leftChildIndex = index;
 			int rightChildIndex = index + 1;
+//			if(rightChildIndex >= backingArray.length){
+//				break;
+//			}
 			E leftChild = backingArray[leftChildIndex];
 			E rightChild = backingArray[rightChildIndex];
 
