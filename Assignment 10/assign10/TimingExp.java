@@ -313,7 +313,7 @@ finally {
              int timesToLoop = S.nextInt();
 
 
-             runExp(maxSize,timesToLoop,increment);
+//             runExp(maxSize,timesToLoop,increment);
              runExp2(maxSize,timesToLoop,increment);
         }
 
