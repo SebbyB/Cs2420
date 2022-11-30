@@ -1,9 +1,9 @@
 package comprehensive;
 
-import org.junit.Rule;
-
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 public class Grammar {
 
@@ -23,6 +23,8 @@ public class Grammar {
            Scanner in = new Scanner(inputFile);
            setBackingArray(in);
            setStart();
+
+            System.out.println("");
         }
 
 
@@ -42,18 +44,12 @@ public class Grammar {
         LinkedList<PhraseRule> start = new LinkedList<>();
 
         String initString = init.get(1).value;
-        char[] initArr = initString.toCharArray();
         boolean add = false;
-        char open = ' ',  close = '.';
-        char next, curr;
-        String rule = "";
-        for(int i = 0; i < initArr.length - 1; i++){
-           curr = initArr[i];
-           if(curr == (' ') || curr == '.'){
-               rule+="";
-            }
-        }
-
+        String open = " ";
+        StringBuilder rule = new StringBuilder();
+        for(String string : initString.split(open)){
+           start.add(new PhraseRule(string));
+       }
         backingArray.set(0,start);
     }
 
@@ -94,25 +90,25 @@ public class Grammar {
             throw new IndexOutOfBoundsException();
         }
         LinkedList<PhraseRule> list = backingArray.get(index);
-        String retString ="";
+        StringBuilder retString = new StringBuilder();
         for (PhraseRule rule : list) {
-            retString += " " + rule.getValue();
+            retString.append(" ").append(rule.getValue());
         }
-        return retString;
+        return retString.toString();
     }
 
     public String toString(){
 
-        String retString = "";
+        StringBuilder retString = new StringBuilder();
         for (int i = 0; i < backingArray.size(); i++) {
-            retString+= RuleListToString(i) + "\n";
+            retString.append(RuleListToString(i)).append("\n");
         }
-        return retString;
+        return retString.toString();
     }
 
     public static void main(String[] args){
 //        Grammar grammar = new Grammar(new File("C:\\Users\\Public\\Documents\\JavaProj\\Assignment 11\\super_simple.g"));
-        Grammar grammar = new Grammar(new File("C:\\Users\\Public\\Documents\\JavaProj\\Assignment 11\\assignment_extension_request.g"));
+        Grammar grammar = new Grammar(new File("Assignment 11/assignment_extension_request.g"));
         System.out.println(grammar.toString());
     }
 
