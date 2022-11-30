@@ -1,11 +1,9 @@
 package comprehensive;
 
-import java.util.LinkedList;
-
 public class PhraseRule {
 
 
-    boolean isTerminal = false;
+    boolean isTerminal = true;
     boolean isStart = false;
     String value;
     int internalIndex;
@@ -13,7 +11,7 @@ public class PhraseRule {
     public PhraseRule(String val) {
         value = val;
         if (val.charAt(0) == '<') {
-            isTerminal = true;
+            isTerminal = false;
             int beginning = 1;
             int end = val.length() - 2;
             if (val.equals("<start>")) {
