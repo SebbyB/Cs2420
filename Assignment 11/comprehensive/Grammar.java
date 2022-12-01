@@ -1,17 +1,19 @@
 package comprehensive;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.LinkedList;
+//import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Grammar {
 
 
 
-    ArrayList<LinkedList<PhraseRule>> backingArray;
-    LinkedList<PhraseRule> startSentence;
-
+    ArrayList<ArrayList<PhraseRule>> backingArray;
+    ArrayList<PhraseRule> startSentence;
+    ArrayList<PhraseRule> ruleSet;
 
 
     int size = 0;
@@ -23,6 +25,7 @@ public class Grammar {
            Scanner in = new Scanner(inputFile);
            setBackingArray(in);
            setStart();
+           setRuleSet();
 
             System.out.println("");
         }
@@ -38,10 +41,16 @@ public class Grammar {
 
     }
 
+    private void setRuleSet(){
+        ruleSet = new ArrayList<>();
+        for (int i = 1; i < backingArray.size(); i++){
+            ruleSet.add(backingArray.get(i).get(0));
+        }
+    }
     private void setStart(){
 
-        LinkedList<PhraseRule> init = backingArray.get(0);
-        LinkedList<PhraseRule> start = new LinkedList<>();
+        ArrayList<PhraseRule> init = backingArray.get(0);
+        ArrayList<PhraseRule> start = new ArrayList<>();
 
         String initString = init.get(1).value;
         boolean add = false;
@@ -51,12 +60,13 @@ public class Grammar {
            start.add(new PhraseRule(string));
        }
         backingArray.set(0,start);
+        startSentence = start;
     }
 
     private void setBackingArray(Scanner in){
-        backingArray = new ArrayList<LinkedList<PhraseRule>>();
+        backingArray = new ArrayList<ArrayList<PhraseRule>>();
         boolean add = false;
-        LinkedList<PhraseRule> RuleList = new LinkedList<PhraseRule>();
+        ArrayList<PhraseRule> RuleList = new ArrayList<PhraseRule>();
         int index = 0;
         while (in.hasNext()){
 
@@ -67,8 +77,8 @@ public class Grammar {
             if(add){
                 if (next.contains(close)) {
                     add = false;
-                    backingArray.add(new LinkedList<>(RuleList));
-                    backingArray.get(index).getFirst().internalIndex = index;
+                    backingArray.add(new ArrayList<>(RuleList));
+                    backingArray.get(index).get(0).internalIndex = index;
                     RuleList.clear();
                     index++;
                 }
@@ -89,12 +99,20 @@ public class Grammar {
         if(index > backingArray.size() - 1){
             throw new IndexOutOfBoundsException();
         }
-        LinkedList<PhraseRule> list = backingArray.get(index);
+        ArrayList<PhraseRule> list = backingArray.get(index);
         StringBuilder retString = new StringBuilder();
         for (PhraseRule rule : list) {
             retString.append(" ").append(rule.getValue());
         }
         return retString.toString();
+    }
+
+    public ArrayList<PhraseRule> getRule(PhraseRule rule){
+        if(!ruleSet.contains(rule)){
+            throw new NoSuchElementException();
+        }
+        return backingArray.get(rule.internalIndex);
+
     }
 
     public String toString(){
@@ -110,6 +128,9 @@ public class Grammar {
 //        Grammar grammar = new Grammar(new File("C:\\Users\\Public\\Documents\\JavaProj\\Assignment 11\\super_simple.g"));
         Grammar grammar = new Grammar(new File("Assignment 11/assignment_extension_request.g"));
         System.out.println(grammar.toString());
+//        for(int i = 0; i < grammar.backingArray.size(); i++){
+//            System.out.println(RuleListToString(i));
+//        }
     }
 
 
