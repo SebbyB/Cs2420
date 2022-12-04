@@ -25,6 +25,7 @@ public class Grammar {
            Scanner in = new Scanner(inputFile);
            setBackingArray(in);
            setStart();
+//           setIndex();
            setRuleSet();
 
             System.out.println("");
@@ -44,7 +45,36 @@ public class Grammar {
     private void setRuleSet(){
         ruleSet = new ArrayList<>();
         for (int i = 1; i < backingArray.size(); i++){
-            ruleSet.add(backingArray.get(i).get(0));
+            PhraseRule rule = backingArray.get(i).get(0);
+            rule.internalIndex = i;
+            ruleSet.add(rule);
+
+        }
+    }
+//    private void setIndex(){
+//        for(int i = 0; i < backingArray.size(); i++){
+//            backingArray.get(i).get(0).internalIndex = i;
+//        }
+//    }
+
+    private boolean hasRule(PhraseRule rule){
+        for(PhraseRule set : ruleSet){
+            if(set.equals(rule)){
+                rule.internalIndex = set.internalIndex;
+                return true;
+            }
+        }
+        return false;
+    }
+    public ArrayList<PhraseRule> getRules(PhraseRule rule){
+        if(hasRule(rule)){
+//            PhraseRule compRule = ruleSet.get(ruleSet.indexOf(rule));
+
+        ArrayList<PhraseRule> rules = backingArray.get(rule.internalIndex);
+        rules.remove(rule);
+        return rules;}
+        else {
+            throw new NoSuchElementException();
         }
     }
     private void setStart(){
@@ -64,6 +94,7 @@ public class Grammar {
     }
 
     private void setBackingArray(Scanner in){
+        boolean isStart = false;
         backingArray = new ArrayList<ArrayList<PhraseRule>>();
         boolean add = false;
         ArrayList<PhraseRule> RuleList = new ArrayList<PhraseRule>();
@@ -83,7 +114,10 @@ public class Grammar {
                     index++;
                 }
                 else{
-                    RuleList.add(new PhraseRule(next));
+
+                    PhraseRule rule = new PhraseRule(next,isStart);
+                    RuleList.add(rule);
+                    isStart = rule.getStartBool();
                     size++;}
             }
             if(next.contains(open)){
@@ -107,13 +141,7 @@ public class Grammar {
         return retString.toString();
     }
 
-    public ArrayList<PhraseRule> getRule(PhraseRule rule){
-        if(!ruleSet.contains(rule)){
-            throw new NoSuchElementException();
-        }
-        return backingArray.get(rule.internalIndex);
 
-    }
 
     public String toString(){
 
@@ -128,9 +156,11 @@ public class Grammar {
 //        Grammar grammar = new Grammar(new File("C:\\Users\\Public\\Documents\\JavaProj\\Assignment 11\\super_simple.g"));
         Grammar grammar = new Grammar(new File("Assignment 11/assignment_extension_request.g"));
         System.out.println(grammar.toString());
+        System.out.println(grammar.getRules(new PhraseRule("<plea>")));
 //        for(int i = 0; i < grammar.backingArray.size(); i++){
 //            System.out.println(RuleListToString(i));
 //        }
+
     }
 
 
