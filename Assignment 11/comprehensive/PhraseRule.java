@@ -1,32 +1,20 @@
 package comprehensive;
 
+import java.util.ArrayList;
+
 public class PhraseRule {
 
 
-    boolean isTerminal = true;
-    boolean isStart = false;
-    String value;
-    int internalIndex;
+    private boolean isTerminal = true;
+    private boolean isStart = false;
+    private String value;
 
 
-    public PhraseRule(String val){
-        new PhraseRule(val, true);
-    }
 
-    public PhraseRule(String val,boolean start) {
 
-        if(start){
-            isStart = false;
-            StringBuilder sb= new StringBuilder(val);
-            String pattern = "[^a-zA-Z0-9]";
-            for(int i = 0; i < val.length(); i++) {
-                if(Character.toString(val.charAt(i)).matches(pattern)) {
-                    sb.insert(i, ' ');
-                }
-            }
-            val = sb.toString();
-        }
-        if (val.charAt(0) == '<') {
+
+    public PhraseRule(String val) {
+        if (val.contains("<")) {
             isTerminal = false;
             if (val.equals("<start>")) {
                 isStart = true;
@@ -36,20 +24,23 @@ public class PhraseRule {
     }
 
 
+
     public String getValue(){
         return value;
     }
 
-    public boolean getStartBool(){
-        return isStart;
-    }
+
     public String toString(){
         return "Value: " + value + "\t isTerminal: " + Boolean.toString(isTerminal) + "\t isStart:" + Boolean.toString(isStart);
     }
-
-        boolean equals(PhraseRule rule){
-
+    
+    public boolean getIsTerminal() {
+    	return isTerminal;
+    }
+    public boolean getIsStart(){
+        return isStart;
+    }
+    public boolean equals(PhraseRule rule){
             return this.value.equals(rule.value);
-
         }
     }

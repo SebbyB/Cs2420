@@ -1,9 +1,11 @@
+
+
 package comprehensive;
 
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-//import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -11,24 +13,25 @@ public class Grammar {
 
 
 
-    ArrayList<ArrayList<PhraseRule>> backingArray;
-    ArrayList<PhraseRule> startSentence;
-    ArrayList<PhraseRule> ruleSet;
+
+    private Hashtable<PhraseRule, ArrayList<PhraseRule>> backingTable;
+    private ArrayList<PhraseRule> startSentence;
+    private ArrayList<PhraseRule> keys;
+    private PhraseRule startKey;
+
 
 
     int size = 0;
 
-    public Grammar (File inputFile){
-
-        System.out.println("Creating Grammar from " + inputFile.toString() + "...");
+    public Grammar (String fileName){
+        File inputFile = new File(fileName);
         try {
            Scanner in = new Scanner(inputFile);
-           setBackingArray(in);
-           setStart();
-//           setIndex();
-           setRuleSet();
-
-            System.out.println("");
+           scanIn(in);
+           setKeys();
+//           setBackingTable();
+           setStartSentence();
+            System.out.println("Grammar Creation Successful!");
         }
 
 
@@ -39,66 +42,52 @@ public class Grammar {
         finally {
             System.out.println(Integer.toString(size) +"\tDone.");
         }
-
     }
 
-    private void setRuleSet(){
-        ruleSet = new ArrayList<>();
-        for (int i = 1; i < backingArray.size(); i++){
-            PhraseRule rule = backingArray.get(i).get(0);
-            rule.internalIndex = i;
-            ruleSet.add(rule);
-
-        }
+    private void setStartSentence() {
+        startSentence = backingTable.get(startKey);
     }
-//    private void setIndex(){
-//        for(int i = 0; i < backingArray.size(); i++){
-//            backingArray.get(i).get(0).internalIndex = i;
-//        }
-//    }
 
-    private boolean hasRule(PhraseRule rule){
-        for(PhraseRule set : ruleSet){
-            if(set.equals(rule)){
-                rule.internalIndex = set.internalIndex;
-                return true;
+    public ArrayList<PhraseRule> getRules(PhraseRule rule){
+
+        for(PhraseRule key : keys) {
+            if (key.equals(rule)) {
+
+                return backingTable.get(key);
             }
         }
-        return false;
+        throw new NoSuchElementException();
     }
-    public ArrayList<PhraseRule> getRules(PhraseRule rule){
-        if(hasRule(rule)){
-//            PhraseRule compRule = ruleSet.get(ruleSet.indexOf(rule));
-
-        ArrayList<PhraseRule> rules = backingArray.get(rule.internalIndex);
-        rules.remove(rule);
-        return rules;}
-        else {
-            throw new NoSuchElementException();
-        }
+    public ArrayList<PhraseRule> getStartSentence(){
+    	return startSentence;
     }
-    private void setStart(){
+//    private void setBackingTable() {
+//        Hashtable<PhraseRule, ArrayList<PhraseRule>> newTable = new Hashtable<>();
+//        for (PhraseRule key : keys) {
+//            if(key.getIsStart()){
+//
+//                startKey = key;
+//
+//            }
+//            ArrayList<PhraseRule> initList = backingTable.get(key), newList = new ArrayList<PhraseRule>();
+//            for (PhraseRule rule : initList) {
+//                String phraseString = rule.getValue();
+//                for (String string : phraseString.split("((?<=(>)|(?=<))")) {
+//                    newList.add(new PhraseRule(string));
+//                    size++;
+//                }
+//            }
+//        newTable.put(key,newList);
+//        }
+//        backingTable = newTable;
+//    }
 
-        ArrayList<PhraseRule> init = backingArray.get(0);
-        ArrayList<PhraseRule> start = new ArrayList<>();
 
-        String initString = init.get(1).value;
-        boolean add = false;
-        String open = " ";
-        StringBuilder rule = new StringBuilder();
-        for(String string : initString.split(open)){
-           start.add(new PhraseRule(string));
-       }
-        backingArray.set(0,start);
-        startSentence = start;
-    }
 
-    private void setBackingArray(Scanner in){
-        boolean isStart = false;
-        backingArray = new ArrayList<ArrayList<PhraseRule>>();
+    private void scanIn(Scanner in){
         boolean add = false;
         ArrayList<PhraseRule> RuleList = new ArrayList<PhraseRule>();
-        int index = 0;
+        backingTable = new Hashtable<>();
         while (in.hasNext()){
 
 
@@ -108,17 +97,22 @@ public class Grammar {
             if(add){
                 if (next.contains(close)) {
                     add = false;
-                    backingArray.add(new ArrayList<>(RuleList));
-                    backingArray.get(index).get(0).internalIndex = index;
+                    PhraseRule key = RuleList.get(0);
+                    RuleList.remove(key);
+                    if(key.getIsStart()){
+
+                        startKey = key;
+
+                    }
+                    ArrayList<PhraseRule> value = new ArrayList<>(RuleList);
+                    backingTable.put(key,value);
                     RuleList.clear();
-                    index++;
                 }
                 else{
 
-                    PhraseRule rule = new PhraseRule(next,isStart);
+                    PhraseRule rule = new PhraseRule(next);
                     RuleList.add(rule);
-                    isStart = rule.getStartBool();
-                    size++;}
+                    }
             }
             if(next.contains(open)){
                 add = true;
@@ -126,42 +120,31 @@ public class Grammar {
         }
     }
 
-
-
-    public String RuleListToString(int index){
-
-        if(index > backingArray.size() - 1){
-            throw new IndexOutOfBoundsException();
-        }
-        ArrayList<PhraseRule> list = backingArray.get(index);
-        StringBuilder retString = new StringBuilder();
-        for (PhraseRule rule : list) {
-            retString.append(" ").append(rule.getValue());
-        }
-        return retString.toString();
+    private void setKeys(){
+    keys = new ArrayList<>(backingTable.keySet());
     }
 
-
-
-    public String toString(){
-
-        StringBuilder retString = new StringBuilder();
-        for (int i = 0; i < backingArray.size(); i++) {
-            retString.append(RuleListToString(i)).append("\n");
-        }
-        return retString.toString();
-    }
 
     public static void main(String[] args){
-//        Grammar grammar = new Grammar(new File("C:\\Users\\Public\\Documents\\JavaProj\\Assignment 11\\super_simple.g"));
-        Grammar grammar = new Grammar(new File("Assignment 11/assignment_extension_request.g"));
-        System.out.println(grammar.toString());
-        System.out.println(grammar.getRules(new PhraseRule("<plea>")));
-//        for(int i = 0; i < grammar.backingArray.size(); i++){
-//            System.out.println(RuleListToString(i));
-//        }
+
+
+//        Grammar grammar = new Grammar("Assignment 11/super_simple.g");
+        Grammar grammar = new Grammar("Assignment 11/assignment_extension_request.g");
+
+        for (PhraseRule key : grammar.keys){
+        System.out.println(key);
+        System.out.println("\n");
+        System.out.println(grammar.getRules(key));
+            System.out.println("\n");
+            System.out.println("\n");
+            System.out.println("\n");
+
+
+        }
+
 
     }
+
 
 
 }
