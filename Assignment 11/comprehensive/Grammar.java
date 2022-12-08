@@ -5,33 +5,22 @@ package comprehensive;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Grammar {
 
 
+	private int startRule = 0;
+    private ArrayList<ArrayList<PhraseRule>> backingArray;
+    private int size = 0;
 
-
-    private Hashtable<PhraseRule, ArrayList<PhraseRule>> backingTable;
-    private ArrayList<PhraseRule> startSentence;
-    private ArrayList<PhraseRule> keys;
-    private PhraseRule startKey;
-
-
-
-    int size = 0;
-
-    public Grammar (String fileName){
-        File inputFile = new File(fileName);
+    public Grammar (File inputFile){
         try {
            Scanner in = new Scanner(inputFile);
-           scanIn(in);
-           setKeys();
-//           setBackingTable();
-           setStartSentence();
-            System.out.println("Grammar Creation Successful!");
+           setBackingArray(in);
+           setStart();
         }
 
 
@@ -40,111 +29,80 @@ public class Grammar {
             e.printStackTrace();
         }
         finally {
-            System.out.println(Integer.toString(size) +"\tDone.");
         }
     }
 
-    private void setStartSentence() {
-        startSentence = backingTable.get(startKey);
+    public ArrayList<ArrayList<PhraseRule>> getBackingArray(){
+    	return backingArray;
     }
 
-    public ArrayList<PhraseRule> getRules(PhraseRule rule){
+    private void setStart(){
 
-        for(PhraseRule key : keys) {
-            if (key.equals(rule)) {
-
-                return backingTable.get(key);
-            }
-        }
-        throw new NoSuchElementException();
+        ArrayList<PhraseRule> init = backingArray.get(startRule);
+        ArrayList<PhraseRule> start = new ArrayList<>();
+        String initString = init.get(1).getValue();
+        start.add(new PhraseRule(init.get(0).getValue()));
+        for(String string : initString.split("((?<=>)|(?=<))")){
+           start.add(new PhraseRule(string));
+       }
+        
+        backingArray.add(0,start);
     }
-    public ArrayList<PhraseRule> getStartSentence(){
-    	return startSentence;
-    }
-//    private void setBackingTable() {
-//        Hashtable<PhraseRule, ArrayList<PhraseRule>> newTable = new Hashtable<>();
-//        for (PhraseRule key : keys) {
-//            if(key.getIsStart()){
-//
-//                startKey = key;
-//
-//            }
-//            ArrayList<PhraseRule> initList = backingTable.get(key), newList = new ArrayList<PhraseRule>();
-//            for (PhraseRule rule : initList) {
-//                String phraseString = rule.getValue();
-//                for (String string : phraseString.split("((?<=(>)|(?=<))")) {
-//                    newList.add(new PhraseRule(string));
-//                    size++;
-//                }
-//            }
-//        newTable.put(key,newList);
-//        }
-//        backingTable = newTable;
-//    }
 
-
-
-    private void scanIn(Scanner in){
+    private void setBackingArray(Scanner in){
+    	int startRuleCounter = 0;
+        backingArray = new ArrayList<ArrayList<PhraseRule>>();
         boolean add = false;
         ArrayList<PhraseRule> RuleList = new ArrayList<PhraseRule>();
-        backingTable = new Hashtable<>();
+        int index = 0;
+        String open = "{";
+        String close = "}";        
         while (in.hasNext()){
-
-
-            String open = "{";
-            String close = "}";
             String next = in.nextLine();
             if(add){
                 if (next.contains(close)) {
+                	startRuleCounter++;
                     add = false;
-                    PhraseRule key = RuleList.get(0);
-                    RuleList.remove(key);
-                    if(key.getIsStart()){
-
-                        startKey = key;
-
-                    }
-                    ArrayList<PhraseRule> value = new ArrayList<>(RuleList);
-                    backingTable.put(key,value);
+                    backingArray.add(new ArrayList<PhraseRule>(RuleList));
+                    backingArray.get(index).get(0).setInternalIndex(index);
                     RuleList.clear();
+                    index++;
                 }
                 else{
-
                     PhraseRule rule = new PhraseRule(next);
-                    RuleList.add(rule);
+                    if(rule.getIsStart()) {
+                    	startRule = startRuleCounter;
                     }
+                    RuleList.add(rule);
+                    size++;}
             }
             if(next.contains(open)){
                 add = true;
             }
         }
     }
-
-    private void setKeys(){
-    keys = new ArrayList<>(backingTable.keySet());
-    }
-
-
-    public static void main(String[] args){
-
-
-//        Grammar grammar = new Grammar("Assignment 11/super_simple.g");
-        Grammar grammar = new Grammar("Assignment 11/assignment_extension_request.g");
-
-        for (PhraseRule key : grammar.keys){
-        System.out.println(key);
-        System.out.println("\n");
-        System.out.println(grammar.getRules(key));
-            System.out.println("\n");
-            System.out.println("\n");
-            System.out.println("\n");
-
-
-        }
-
-
-    }
-
-
+   
+//------------Methods Primarily used for testing purposes-------------
+//    public String RuleListToString(int index){
+//
+//        if(index > backingArray.size() - 1){
+//            throw new IndexOutOfBoundsException();
+//        }
+//        ArrayList<PhraseRule> list = backingArray.get(index);
+//        StringBuilder retString = new StringBuilder();
+//        for (PhraseRule rule : list) {
+//            retString.append(" ").append(rule.getValue());
+//        }
+//        return retString.toString();
+//    }
+//
+//    public String toString(){
+//
+//        StringBuilder retString = new StringBuilder();
+//        for (int i = 0; i < backingArray.size(); i++) {
+//            retString.append(RuleListToString(i)).append("\n");
+//        }
+//        return retString.toString();
+//    }
 
 }

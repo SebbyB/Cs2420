@@ -1,104 +1,86 @@
 package comprehensive;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 public class RandomPhraseGenerator {
 
 
-    Grammar grammarRuleSet;
-    String filePath;
-
-    StringBuilder finalPhrase;
+    private Grammar grammarRuleSet;
+    private String phrase;
+    private String filePath;
+    private File file;
+    private ArrayList<ArrayList<PhraseRule>> backingArray;
+    private Random r = new Random();
+    private StringBuilder finalPhrase = new StringBuilder();
+    private HashMap<String,Integer> whichTerminal = new HashMap<String,Integer>();
 
     public RandomPhraseGenerator(String filePath) {
 
-        grammarRuleSet = new Grammar(filePath);
-        finalPhrase = new StringBuilder();
-
+        this.filePath = filePath;
+        this.file = new File(filePath);
+        this.grammarRuleSet = new Grammar(file);
+        this.backingArray = grammarRuleSet.getBackingArray();
+        for(int i = 1; i < backingArray.size();i++) {
+        	whichTerminal.put(backingArray.get(i).get(0).getValue(), i);
+        }
+        
+        
     }
 
-//    private String solvePhraseRule(PhraseRule rule){
-//        StringBuilder intermediatePhrase = new StringBuilder();
-//        if(!rule.getIsTerminal()){
-//            for (String string : rule.getValue().split("((?<=\s)|(?=[.,:;!?]))")){
-//
-//                PhraseRule checkRule = new PhraseRule(string);
-//                if (checkRule.getIsTerminal()){
-//                intermediatePhrase.append(string);
-//                }
-//                else {
-//                    ArrayList<PhraseRule> rules = grammarRuleSet.getRules(checkRule);
-//                    return solvePhraseRule(rules.get(new Random().nextInt(rules.size())));
-//                }
-//            }
-//        }
-//        else {
-//            intermediatePhrase.append(rule.getValue());
-//        }
-//        return intermediatePhrase.toString();
-//    }
-    public String generatePhrase() {
+    public String generatePhrase(){
 
-        LinkedList<String> stringQueue = new LinkedList<>();
-        for (String string : grammarRuleSet.getStartSentence().get(0).getValue().split("((?<=\s)|(?=[!._,@? ]))")){
-           stringQueue.push(string);
+        for(int i = 1; i < backingArray.get(0).size();i++) {
+        
+        	if(backingArray.get(0).get(i).getIsTerminal()) {
+        		finalPhrase.append(backingArray.get(0).get(i).getValue());
+        		
+        	}
+        	else {
+        	int whichTerminal  = whichNonTerminal(backingArray.get(0).get(i));
+                generatePhraseRecursive(whichTerminal);
+        		}
+        	
         }
-
-        while(!stringQueue.isEmpty()){
-            PhraseRule checkRule = new PhraseRule(stringQueue.removeLast());
-            if(checkRule.getIsTerminal()){
-                finalPhrase.append(checkRule.getValue());
-            }
-            else{
-                ArrayList<PhraseRule> rules = grammarRuleSet.getRules(checkRule);
-                for(String string : rules.get(new Random().nextInt(rules.size())).getValue().split("((?<=\s)|(?=[!._,@? ]))"))
-                        stringQueue.push(string);
-            }
-
+          String endPhrase = finalPhrase.toString();
+          this.finalPhrase = new StringBuilder();
+          return endPhrase;
         }
-
-
-return finalPhrase.toString();
+    
+    private void generatePhraseRecursive(int c) {
+    	 
+    	  int sizing = (backingArray.get(c).size()-1);
+          int pickedPhrase = r.nextInt(sizing)+1;
+          PhraseRule addedPhrase = backingArray.get(c).get(pickedPhrase);
+          for(String phrase : addedPhrase.getValue().split("((?<=>)|(?=<))")) {
+          PhraseRule newPhrase= new PhraseRule(phrase);
+          if(newPhrase.getIsTerminal()) {
+        	  finalPhrase.append(newPhrase.getValue());
+          } else{
+        	 generatePhraseRecursive(whichNonTerminal(newPhrase));
+    	  }
+         
+       }
     }
-
-
-
-//    private void generatePhraseRecursive(int c) {
-//
-//          int pickedPhrase = r.nextInt(backingArray.get(c).size()-1) + 1;
-//          PhraseRule addedPhrase = backingArray.get(c).get(pickedPhrase);
-//          for(String phrase : addedPhrase.getValue().split("((?<=>)|(?=<))")) {
-//          PhraseRule newPhrase= new PhraseRule(phrase);
-//          if(newPhrase.getIsTerminal()) {
-//        	  finalPhrase.append(newPhrase.getValue());
-//          } else{
-//        	 generatePhraseRecursive(whichNonTerminal(newPhrase));
-//    	  }
-//       }
-//    }
-//
-//
-//    private int whichNonTerminal(PhraseRule rule) {
-//    	for(int i = 1; i < this.backingArray.get(1).size(); i ++) {
-//    		if(backingArray.get(i).get(0).getValue().equals(rule.getValue())){
-//    			return i;
-//    		}
-//    	}
-//    		return -1;
-//    }
-
-
+    
+    
+    private int whichNonTerminal(PhraseRule rule) {
+    	return whichTerminal.get(rule.getValue());
+    }
+    
     public static void main(String[] args){
 
-
-//        int n = Integer.parseInt(args[1]);
-        int n = 50;
-//        RandomPhraseGenerator gen = new RandomPhraseGenerator("Assignment 11/super_simple.g");
-//        for(int i = 0; i < n; i++){
-        RandomPhraseGenerator gen1 = new RandomPhraseGenerator("Assignment 11/assignment_extension_request.g");
-        for(int i = 0; i < n; i++)
-            System.out.println(gen1.generatePhrase());
+//        String file = ;
+        int n = 10;
+    	StringBuilder phraseList = new StringBuilder();
+        RandomPhraseGenerator gen = new RandomPhraseGenerator("Assignment 11/comprehensive/generatedGrammar.g");
+    	for(int i = 0 ; i < n;i++) {
+    	phraseList.append(gen.generatePhrase());
+    	phraseList.append("\n");
+    	}
+    	System.out.print(phraseList.toString());
     }
 
 }

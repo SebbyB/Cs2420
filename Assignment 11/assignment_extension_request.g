@@ -1,9 +1,6 @@
 The I-didn't-finish-my-assignment-because grammar.
 
-{
-<start>
-I need an extension because <plea>.
-}
+
 
 {
 <plea>
@@ -50,6 +47,7 @@ my <something> was enshrouded in a mysterious fog for three days and then vanish
 I had recurring dreams about my <something>
 }
 
+
 {
 <lots-of-work>
 <impressive-number> midterms
@@ -90,5 +88,9 @@ dreams
 motivation
 }
 
+{
+<start>
+I need an extension because <plea>.
+}
 
 

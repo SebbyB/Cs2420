@@ -1,6 +1,5 @@
 package comprehensive;
 
-import java.util.ArrayList;
 
 public class PhraseRule {
 
@@ -8,13 +7,10 @@ public class PhraseRule {
     private boolean isTerminal = true;
     private boolean isStart = false;
     private String value;
-
-
-
-
+    private int internalIndex;
 
     public PhraseRule(String val) {
-        if (val.contains("<")) {
+        if (val.charAt(0) == '<') {
             isTerminal = false;
             if (val.equals("<start>")) {
                 isStart = true;
@@ -24,23 +20,25 @@ public class PhraseRule {
     }
 
 
-
+    public void setIsTerminalFalse(){
+        this.isTerminal = false;
+    }
     public String getValue(){
         return value;
     }
-
-
-    public String toString(){
-        return "Value: " + value + "\t isTerminal: " + Boolean.toString(isTerminal) + "\t isStart:" + Boolean.toString(isStart);
+    public void setInternalIndex(int i) {
+    	this.internalIndex = i;
     }
-    
+
     public boolean getIsTerminal() {
     	return isTerminal;
     }
-    public boolean getIsStart(){
-        return isStart;
-    }
+    
+    public boolean getIsStart() {
+    	return isStart;
+    } 
     public boolean equals(PhraseRule rule){
             return this.value.equals(rule.value);
+
         }
     }
